@@ -253,6 +253,9 @@ const sheetFlow=()=>sheetBa();
 const noEnrollPage=()=>sheetBa()||recommend();
 const defaultTrialOn=()=>S.flow==='current'||S.flow==='recommend';
 const shipFree=()=>S.v==='cur'||(T()&&S.trialOptIn);
+/* Brief SoT: V2 opt-in = 5-5-5-5; Control / V1 / V2 decline = BAU 15-15-15-15 */
+const tailPct=()=>T()&&S.trialOptIn?5:15;
+const tailLabel=()=>`${tailPct()}% off`;
 const C=tag=>S.v!=='cur'?`chg" data-tag="${tag}`:'';
 const ph=t=>`<span class="ph">${t}</span>`;
 const $=s=>document.querySelector(s);
@@ -309,7 +312,7 @@ const promo=(key,p)=>{const open=S.promo[key];
   return `<div class="promo" data-toggle="${key}"><h2>Promo code</h2><span><i class="okc">&#10003;</i><i class="chev ${open?'up':''}"></i></span></div>
 ${open?`<div class="promobody"><div class="codebox"><div><small>Promo code</small><i class="tagic"></i>EL-6B7QY38KC<span style="margin-left:auto;color:var(--green)">&#10003;</span></div><button>Apply</button></div>
 <ul><li class="${(T()||E())?C('CHANGED'):''}"><b class="r">${p.off} off</b>${firstBoxExtra} on your first box</li>
-<li><b class="r">15% off</b> across your next 4 boxes</li>
+<li class="${T()&&S.trialOptIn?C('CHANGED'):''}"><b class="r">${tailLabel()}</b> across your next 4 boxes</li>
 <li>Special Offer Applied Free Breakfast Item For Life, one per box with active subscription</li></ul></div>`:''}`};
 
 const deliv=()=>`<h2 class="dh">Delivery address</h2><div class="fl"><label>First delivery</label><div>Saturday, November 14<span>&#9638;</span></div></div><div class="sel">Delivery instructions <i class="caret"></i></div>
@@ -323,7 +326,7 @@ const benefitLines=()=>{
     :'50% off your first box';
   const lines=[
     `<div class="ck ${(E()||T())?C('CHANGED'):''}"><b>&#10003;</b><span>${first}</span></div>`,
-    `<div class="ck"><b>&#10003;</b><span>15% off your next 4 boxes</span></div>`,
+    `<div class="ck ${T()&&S.trialOptIn?C('CHANGED'):''}"><b>&#10003;</b><span>${tailLabel()} your next 4 boxes</span></div>`,
     `<div class="ck"><b>&#10003;</b><span>Free Breakfast Item For Life, one per box with active subscription</span></div>`
   ];
   if(T()) lines.push(`<div class="ck ${C('NEW')}"><b>&#10003;</b><span>Free shipping + exclusive member benefits with 1 month free trial of HF+</span></div>`);
@@ -432,10 +435,10 @@ screens.enroll=()=>{
 <button class="btn ${S.agree?'':'off'}" data-go="done2">Confirm plan</button><p class="skip" data-skip-shipping>Skip — pay shipping</p></main>`};
 
 const NOTES={
-plan:['HF+ block only in V2. Toggle → plan page and Recommended+consent: free shipping from Plan. Opt-in sheet: charged until Payment sheet.'],
-acct:['V1/V2 remove free shipping from the first benefit line. V2 adds HF+ trial line.'],
-addr:['Only V2 HF+ / shipping state differs from Control.'],
-pay:['Toggle → plan page: Payment = include/decline trial (shipping only). Plan choice happens after Place order.'],
+plan:['HF+ block only in V2. Toggle → plan page and Recommended+consent: free shipping from Plan. Opt-in sheet: charged until Payment sheet. V2 opt-in tails = 5% (not BAU 15%).'],
+acct:['V1/V2 remove free shipping from the first benefit line. V2 adds HF+ trial line. Opt-in shows 5% on next 4 boxes; decline keeps 15%.'],
+addr:['Only V2 HF+ / shipping / tail % differs from Control. Opt-in = 5% tails in promo.'],
+pay:['Toggle → plan page: Payment = include/decline trial (shipping only). Plan choice happens after Place order. Opt-in swaps to 5% tails.'],
 enroll:['Split decision: you\'re already in. Choose post-trial plan (not Start free trial). Skip — pay shipping declines HF+ and charges shipping.']
 };
 const NOTES_SHEET={
